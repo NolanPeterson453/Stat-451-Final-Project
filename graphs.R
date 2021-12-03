@@ -1,6 +1,7 @@
 ## Import statements 
 library(dplyr)
 library(ggplot2)
+library(readr)
 
 ## Read in SOC data cleaned 
 soc_data <- read_csv(file = "cleaned_data.csv")
@@ -26,6 +27,39 @@ FSLPR_REGION <- ggplot(data = soc_data, aes(y = FSLPR,
                                                  "Pacific"))
 
 #FSLPR_REGION
+
+## Heating fuel as a proxy for LOTV
+ggplot(data = soc_data, aes(y = LOTV, 
+                            x = as.factor(FUEL), 
+                            color = as.factor(FUEL))) + 
+  geom_boxplot() +
+  labs(y = "Lot Value",
+       x = "Heating Fuel Type",
+       color = "Heating Fuel Type") +
+  scale_color_manual(values = c(1:6), labels = c("01 = Electricity",
+"02 = Natural gas",
+"03 = Bottled or liquefied 
+petroleum gas (including propane)", 
+"04 = Oil  
+(including heating oil or kerosene)",
+"05 = Other or no heat",
+"00 = Not reported"))
+
+## Heating system as proxy for overall size of the house 
+
+ggplot(data = soc_data, aes(y = FSLPR, 
+                            x = as.factor(HEAT), 
+                            color = as.factor(HEAT))) + 
+  geom_boxplot() +
+  labs(y = "Area of Home in Square Feet",
+       x = "Heating System Used",
+       color = "Heating Fuel Type") +
+  scale_color_manual(values = c(1:5), labels = c("1 = Heat pump (air or ground source)",
+                                                 "2 = Forced air furnace (without heat pump)",
+                                                 "3 = Hot water or steam system",
+                                                 "4 = Other or no heat",
+                                                 "0 = Not reported"))
+
 
 ## Create graph of importance scores 
 
