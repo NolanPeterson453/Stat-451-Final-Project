@@ -2,6 +2,7 @@
 library(dplyr)
 library(ggplot2)
 library(readr)
+library(knitr)
 
 ## Read in SOC data cleaned 
 soc_data <- read_csv(file = "cleaned_data.csv")
@@ -59,7 +60,53 @@ ggplot(data = soc_data, aes(y = FSLPR,
                                                  "3 = Hot water or steam system",
                                                  "4 = Other or no heat",
                                                  "0 = Not reported"))
+## DECK VS Sale Price boxplots
 
+ggplot(data = soc_data, aes(x = as.factor(DECK), y = FSLPR)) +
+  geom_boxplot()
+
+
+## LOT AREA vs SALE PRICE with DIV as confounding feature
+my_color <- c(ggsci::pal_npg("nrc")(9), ggsci::pal_lancet("lanonc")(9))
+ggplot(data = soc_data, aes(x = AREA, y = FSLPR, color = as.factor(DIV))) +
+  geom_point() + labs(y = "Sale Price of Home",
+                      x = "Lot Size",
+                      color = "Region of Home") +
+  scale_color_manual(values = my_color, labels = c("New England",
+                                                 "Middle Atlantic",
+                                                 "East North Central",
+                                                 "West North Central",
+                                                 "South Atlantic",
+                                                 "East South Central",
+                                                 "West South Central",
+                                                 "Mountain",
+                                                 "Pacific"))
+## Looking at averages
+soc_data %>% group_by(DIV) %>% 
+  summarise(avg_price = mean(FSLPR),
+            avg_area = mean(AREA)) %>% 
+  ggplot(aes(x = avg_area, y = avg_price, color = as.factor(DIV), label = c("New England",
+                                                                            "Middle Atlantic",
+                                                                            "East North Central",
+                                                                            "West North Central",
+                                                                            "South Atlantic",
+                                                                            "East South Central",
+                                                                            "West South Central",
+                                                                            "Mountain",
+                                                                            "Pacific"))) + 
+  geom_point() + labs(y = "Average Sale Price of Home",
+                      x = "Average Lot Size",
+                      color = "Region of Home") +
+  scale_color_manual(values = my_color, labels = c("New England",
+                                                   "Middle Atlantic",
+                                                   "East North Central",
+                                                   "West North Central",
+                                                   "South Atlantic",
+                                                   "East South Central",
+                                                   "West South Central",
+                                                   "Mountain",
+                                                   "Pacific")) +
+  ggrepel::geom_text_repel()
 
 ## Create graph of importance scores 
 
